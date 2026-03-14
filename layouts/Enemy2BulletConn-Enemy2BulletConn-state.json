@@ -1,0 +1,25 @@
+[
+  {
+    "context": "::Enemy2BulletConn",
+    "diagramType": "state",
+    "layouts": [
+      {
+        "element": "initial-state",
+        "x": -23.0,
+        "y": 69.0
+      },
+      {
+        "element": "State1",
+        "x": 90.0,
+        "y": 37.0,
+        "w": 94.0,
+        "h": 93.0
+      },
+      {
+        "element": "passOnShoot",
+        "label_x": 49.0,
+        "label_y": 41.0
+      }
+    ]
+  }
+]

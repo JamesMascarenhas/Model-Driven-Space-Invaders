@@ -1,0 +1,188 @@
+capsule Player {
+    [[rt::header_preface]]
+    `
+        #include <stdlib.h>
+    `
+    [[rt::decl]]
+    `
+            // x coordinate of current position of player shape
+            int x { 300 } ;
+            // y coordinate of current position of player shape
+            int y { 550 } ;
+            // height of player shape
+            const int h { 10 } ;
+            // width of player shape
+            int w { 40 } ;
+            int livesLeft;
+            bool invincible { false } ;
+            // number of pixels that player moves in x-direction per 'move' message received
+            int speed { 3 } ;
+            // red value of RGB description of colour of Player shape
+            int r { 0 } ;
+            // green value of RGB description of colour of Player shape
+            int g { 255 } ;
+            // blue value of RGB description of colour of Player shape
+            int b { 0 } ;
+            int NUM_LIVES = 3;
+        protected:
+            char name[ 100 ] { "[P]\t" } ;
+        public:
+            bool isHit( Location loc );
+            Shape createInvisibleShape( int x, int y, int w, int h );
+            Shape createVisibleShape( int x, int y, int w, int h, int r, int g, int b );
+            Location createInitialBulletLocation( void );
+            void updateLocation( int dir );
+    `
+    [[rt::impl]]
+    `
+        bool Player::isHit( Location loc )  {
+            int x2 = loc.get_X();
+            int y2 = loc.get_Y();
+            return ((x2>=x) && (x2<x+w) && (y2>=y) && (y2<y+h));
+        }
+
+        Shape Player::createInvisibleShape( int x, int y, int w, int h )  {
+            Shape shape;
+            shape.setInvisible(x,y,w,h);
+            return shape;
+        }
+
+        Shape Player::createVisibleShape( int x, int y, int w, int h, int r, int g, int b )  {
+            Shape shape;
+            shape.setVisible(x,y,w,h,r,g,b);
+            return shape;
+        }
+
+        Location Player::createInitialBulletLocation( void )  {
+            Location loc;
+            loc.set_X(x+w/2);
+            loc.set_Y(y);
+            return loc;
+        }
+
+        void Player::updateLocation( int dir )  {
+            x = x+(dir*speed);
+            if (x>600-w) x = 600-w;
+            if (x<0) x = 0;
+        }
+    `
+    service behavior port inputP~ : PlayerInputProt;
+    service behavior port startGameP~ : StartGameProt;
+    service behavior port shootP : ShootProt;
+    service behavior port checkHitPlayerP~ : CheckHitProt [3];
+    service behavior port renderP : RenderProt;
+    behavior port timerP : Timing;
+    service behavior port endGameP : EndGameProt;
+    statemachine {
+        state Ready;
+        state Alive;
+        state Dead {
+            ignoreAll: on checkHitPlayerP.*, inputP.*, timerP.*;
+        };
+
+        choice check_gotHit;
+        choice check_invincible;
+        choice check_livesLeft;
+
+        junction junct;
+
+        init: initial  ->  Ready
+        `
+            livesLeft = NUM_LIVES;
+        `;
+
+        start: Ready -> Alive on startGameP.start
+        `
+            Shape shape;
+            // create shapes for number-of-lives-left indicator bars and tell 'Top' to render them
+            for (int i=0; i<NUM_LIVES; i++) {
+            	shape = createVisibleShape(50+i*(w+20),y+h+30,w,h,255,255,255);
+            	renderP.render(shape).send();
+            }
+
+            // create shape for player at current location
+            shape = createVisibleShape(x,y,w,h,r,g,b);
+
+            // tell 'Top' to render it
+            renderP.render(shape).send();
+        `;
+
+        invincibleEnd: Alive -> Alive on timerP.timeout
+        `
+            invincible = false;
+            std::cout << name << "invincibility ended" << std::endl;
+            r = 0;  // change colour back to default
+        `;
+
+        move: Alive -> Alive on inputP.move
+        `
+            // 'Top' told player that user moved player
+            int direction = *rtdata;
+
+            Shape shape;
+            // create invisible shape for player at current location
+            shape = createInvisibleShape(x,y,w,h);
+
+            // tell 'Top' to render this shape (effectively making the player disappear at current location)
+            renderP.render(shape).send();
+
+            // compute new location
+            updateLocation(direction);
+             
+            // create visible shape for player at new location
+            shape = createVisibleShape(x,y,w,h,r,g,b);
+
+            // tell 'Top' to render this shape (effectively making player visible at new location)
+            renderP.render(shape).send();
+        `;
+        shoot : Alive -> Alive on inputP.shoot
+        `
+            // Create the location for the player bullet
+            Location bLoc = createInitialBulletLocation();
+            // Tell the player bullet to shoot from this location
+            shootP.shoot(bLoc).send();
+        `;
+
+        check: Alive -> check_gotHit on checkHitPlayerP.check;
+        no1: check_gotHit -> Alive;
+        yes1: check_gotHit -> check_invincible when 
+        `
+            Location locBullet = *rtdata;
+            return isHit(locBullet);
+        `
+        `
+            int portId = msg->sapIndex0();	// which bullet hit me?
+            std::cout << name << "got hit by EB at port " << portId << std::endl;
+            checkHitPlayerP.hit().sendAt(portId);	// tell that bullet via connector that it hit so that it can disappear
+        `;
+        yes2: check_invincible -> junct when 
+        `
+            return (invincible);
+        `;
+        no2: check_invincible -> check_livesLeft
+        `
+            livesLeft = livesLeft-1;
+            std::cout << name << livesLeft << " lives left" << std::endl;
+
+            invincible = true;
+            r = 255;	// player has different colour while invincible
+            std::cout << name << "2 seconds invincibility start" << std::endl;
+            timerP.informIn(RTTimespec(1,0));	// set invincibility timer
+
+            // remove one life indicator
+            Shape shape = createInvisibleShape(50+livesLeft*(w+20),y+h+30,w,h);
+            // shape.setInvisible(50+livesLeft*(w+20),y+h+30,w,h);		
+            renderP.render(shape).send();
+        `;
+        no3: check_livesLeft -> Dead when 
+        `
+            return (livesLeft<=0);
+        `
+        `
+            std::cout << name << "I'm dead!" << std::endl;
+            endGameP.playerLoses().send();
+        `;
+        yes3: check_livesLeft -> junct;
+        junct -> Alive;
+    };
+};

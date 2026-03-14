@@ -1,0 +1,38 @@
+capsule Bullet2BunkerConn {
+    [[rt::decl]]
+    `
+        protected:
+            char name[ 100 ] { "[EBC]\t" } ;
+    `
+    service behavior port bunkerP : CheckHitProt [32];
+    service behavior port bulletP~ : CheckHitProt [3];
+    statemachine {
+        state State1;
+        init: initial  ->  State1
+        `
+            std::cout << name << "up" << std::endl;
+        `;
+        passingOnCheck: State1 -> State1 on bulletP.check
+        `
+            Location loc = *rtdata;
+            int bulletPortId = msg->sapIndex0();
+            loc.set_id(bulletPortId);
+            // tell bunkers to check for collision with bullet at location loc
+            bunkerP.check(loc).send();
+            // int x = loc.get_X();
+            // int y = loc.get_Y();
+            // int id = loc.get_id();
+            // std::cout << name << "passing on 'check(" << x << "," << y << "," << id << ")' from 'bulletP[" << id << "]' to bunkers" << std::endl;
+        `;
+        passingOnHit: State1 -> State1 on bunkerP.hitById
+        `
+            int bulletId = *rtdata;
+
+            // tell bullet with id 'bulletId' that it hit something so that I can disappear
+            bulletP.hit().sendAt(bulletId);
+
+            // int portId = msg->sapIndex0();
+            // std::out << name << "passing on 'hit()' from 'bunkerP[" << portId << "]' to 'bulletP[" << bulletId << "]'" << std::endl;
+        `;
+    };
+};

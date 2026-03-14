@@ -1,0 +1,231 @@
+capsule Enemy {
+    [[rt::header_preface]]
+    `
+        #include<stdio.h>
+        #include<string.h>
+        #include <time.h>
+        #include <stdlib.h>
+    `
+    [[rt::decl]]
+    `
+            // index of this enemy (number between 0 and 54)
+            int id;
+            // direction that this enemy is currently going in: '1' == right, '-1' == left, '0' == down
+            int direction;
+            // x coordinate of current position of enemy shape
+            int x;
+            // y coordinate of current position of enemy shape
+            int y;
+            // height of enemy shape
+            int h { 25 } ;
+            // height of enemy shape
+            int w { 25 } ;
+            bool dead { false } ;
+            // width of the left and right margins
+            int x_margin { 20 } ;
+            // width of the top and bottom margins
+            int y_margin { 50 } ;
+            // if an enemy reaches this y-coordinate, the player loses
+            int deadline { 400 } ;
+            // red value of RGB description of colour of Enemy shape
+            int r { 255 } ;
+            // green value of RGB description of colour of Enemy shape
+            int g { 255 } ;
+            // blue value of RGB description of colour of Enemy shape
+            int b { 255 } ;
+            // determines how long an ememy holds on to a 'move' message received from its predecessor before it passes it on to its successor
+            int PROPAGATION_DELAY { 10000000 } ;
+            // determines how frequently the enemies shoot
+            int SHOOT_PROBABILITY { 2 } ;
+        protected:
+            char name[ 100 ] { "" } ;
+        public:
+            bool isHit( Location loc );
+            Shape createInvisibleShape( int x, int y, int w, int h );
+            Shape createVisibleShape( int x, int y, int w, int h, int r, int g, int b );
+            void updateLocation( void );
+            bool atLeftBorder( void );
+            bool atRightBorder( void );
+            bool atBottom( void );
+            Location createInitialBulletLocation( void );
+    `
+    [[rt::impl]]
+    `
+        bool Enemy::isHit( Location loc )  {
+            int x2 = loc.get_X();
+            int y2 = loc.get_Y();
+            return ((x2>=x) && (x2<x+w) && (y2>=y) && (y2<y+h));
+        }
+        
+        Shape Enemy::createInvisibleShape( int x, int y, int w, int h )  {
+            Shape shape;
+            shape.setInvisible(x,y,w,h);
+            return shape;
+        }
+        
+        Shape Enemy::createVisibleShape( int x, int y, int w, int h, int r, int g, int b )  {
+            Shape shape;
+            shape.setVisible(x,y,w,h,r,g,b);
+            return shape;
+        }
+        
+        void Enemy::updateLocation( void )  {
+            if (direction==0)  // go down
+                y+=10;
+            else               // go right (direction==1) or left (direction==-1)
+                x+=direction*10;
+        }
+        
+        bool Enemy::atLeftBorder( void )  {
+            return (x<=x_margin);
+        }
+        
+        bool Enemy::atRightBorder( void )  {
+            return (x>=600-x_margin-w);
+        }
+        
+        bool Enemy::atBottom( void )  {
+            return (y+h>deadline);
+        }
+        
+        Location Enemy::createInitialBulletLocation( void )  {
+            Location loc;
+            loc.set_X(x);
+            loc.set_Y(y);
+            loc.set_id(id);
+            return loc;
+        }
+    `
+    service behavior port renderP : RenderProt;
+    service behavior port harnessP~ : HarnessProt;
+    service behavior unwired subscribe port movePrevP~ 
+    [[rt::properties(
+        registration= automatic
+    )]]
+    : MoveEnemyProt;
+    service behavior unwired subscribe port moveNextP 
+    [[rt::properties(
+        registration= automatic
+    )]]
+    : MoveEnemyProt;
+    service behavior port checkHitEnemyP~ : CheckHitProt;
+    behavior port timerP : Timing;
+    service behavior port shootP : ShootProt;
+    service behavior port endGameP : EndGameProt;
+    service behavior port startGameP~ : StartGameProt;
+    statemachine {
+        
+        state Ready;
+        state Alive;
+        state Dead;
+        choice check_gotHit;
+
+        init: initial  ->  Ready
+        `
+            srand(time(0));				// init random number generator
+
+            // set parameters
+            int h_dist = 35;			// horizontal gap b/w enemies
+            int v_dist = 50;			// vertical gap b/w enemies
+            int n_row = 11;				// number of enemies per row
+
+            // who am I?
+            id = this->getIndex();
+
+            // my log name is "[E(<id>)]\t"
+            char buffer[100] = "";
+            snprintf(buffer, 100, "[E(%d)]\t", id);
+            strcpy(name, buffer);
+
+            // where should I be?
+            int col = (54-id)%n_row;	// compute column
+            int row = (54-id)/n_row;	// compute row
+            x = col*h_dist+x_margin;	// compute position
+            y = row*v_dist+y_margin;
+
+            // what color am I?
+            switch (row){
+            	case 0:
+            		r = 219;
+            		g = 85;
+            		b = 221;
+            		break;
+            	case 1:
+            		r = 83;
+            		g = 83;
+            		b = 241;
+            		break;
+            	case 2:
+            		r = 83;
+            		g = 83;
+            		b = 241;
+            		break;
+            	case 3:
+            		r = 66;
+            		g = 233;
+            		b = 244;
+            		break;
+            	case 4:
+            		r = 66;
+            		g = 233;
+            		b = 244;
+            		break;
+            	default:
+            		break;
+            }
+        `;
+        start: Ready -> Alive on startGameP.start
+        `
+            std::cout << name << "up at location (" << x << "," << y << ")" << std::endl;
+
+            // create new visible shape for this enemy at this location
+            Shape shape = createVisibleShape(x,y,w,h,r,g,b);
+
+            // tell 'Top' to render this new shape
+            renderP.render(shape).send();
+
+            // connect unwired ports using id as topic
+            char myIdStr[3];
+            char prevIdStr[3];
+            sprintf(myIdStr,"%d",id);
+            sprintf(prevIdStr,"%d",id-1);
+            if (id==0) {
+            	movePrevP.registerSAP("fromHarness");
+            	moveNextP.registerSPP(myIdStr);
+            }
+            else if (id==54) {
+            	movePrevP.registerSAP(prevIdStr);
+            	moveNextP.registerSAP("toHarness");
+            }
+            else {
+            	movePrevP.registerSAP(prevIdStr);
+            	moveNextP.registerSPP(myIdStr);
+            }
+
+            // tell harness that done connecting
+            harnessP.ready().send();
+        `;
+        checkHit: Alive -> check_gotHit on checkHitEnemyP.check;
+        no1: check_gotHit -> Alive;
+        yes1: check_gotHit -> Dead when 
+        `
+            Location loc = *rtdata;
+            return (isHit(loc));
+        `
+        `
+            std::cout << name << "I'm dead!" << std::endl;
+
+            // tell player bullet about it
+            checkHitEnemyP.hit().send();
+
+            // tell harness about it
+            harnessP.killed().send();
+
+            // tell 'Top' to make this enemy invisible
+            Shape shape;
+            shape.setInvisible(x,y,w,h);
+            renderP.render(shape).send();
+        `;
+        ignoreCheck: Dead -> Dead on checkHitEnemyP.check;
+    };
+};

@@ -1,0 +1,8 @@
+protocol ShootProt {
+    [[rt::header_preface]]
+    `
+        #include <RTType_Location.h>
+    `
+    out shoot(`Location`);
+};
+

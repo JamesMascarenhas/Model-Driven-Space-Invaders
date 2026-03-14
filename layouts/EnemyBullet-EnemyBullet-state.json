@@ -1,0 +1,138 @@
+[
+  {
+    "context": "::EnemyBullet",
+    "diagramType": "state",
+    "layouts": [
+      {
+        "element": "initial-state",
+        "x": -3.0,
+        "y": 122.0
+      },
+      {
+        "element": "Waiting",
+        "x": 107.0,
+        "y": 14.0,
+        "w": 85.0,
+        "h": 252.0
+      },
+      {
+        "element": "Flying",
+        "x": 406.0,
+        "y": 19.0,
+        "w": 88.0,
+        "h": 111.0
+      },
+      {
+        "element": "check_outside",
+        "x": 429.0,
+        "y": 219.0
+      },
+      {
+        "element": {
+          "source": "_outside__",
+          "target": "Waiting"
+        },
+        "sourcePosition": "W50",
+        "targetPosition": "E90"
+      },
+      {
+        "element": {
+          "source": "_outside__",
+          "target": "Flying"
+        },
+        "sourcePosition": "N38",
+        "targetPosition": "S84"
+      },
+      {
+        "element": {
+          "source": "Flying",
+          "target": "_outside__"
+        },
+        "sourcePosition": "S23",
+        "targetPosition": "N50"
+      },
+      {
+        "element": "update",
+        "label_x": -33.0,
+        "label_y": 1.0
+      },
+      {
+        "element": "no",
+        "label_x": 8.0,
+        "label_y": 32.0
+      },
+      {
+        "element": "yes",
+        "label_x": 99.0,
+        "label_y": 20.0
+      },
+      {
+        "element": {
+          "source": "Flying",
+          "target": "Waiting"
+        },
+        "sourcePosition": "W59",
+        "targetPosition": "E28"
+      },
+      {
+        "element": {
+          "source": "Waiting",
+          "target": "Flying"
+        },
+        "sourcePosition": "E40",
+        "targetPosition": "W86"
+      },
+      {
+        "element": "shoot",
+        "label_x": -56.0,
+        "label_y": 18.0
+      },
+      {
+        "element": "init",
+        "label_x": -15.0,
+        "label_y": -10.0
+      },
+      {
+        "element": {
+          "source": "check_outside",
+          "target": "Waiting"
+        },
+        "sourcePosition": "W50",
+        "targetPosition": "E89"
+      },
+      {
+        "element": {
+          "source": "Flying",
+          "target": "check_outside"
+        },
+        "sourcePosition": "S26",
+        "targetPosition": "N38",
+        "bendpoints": [
+          {
+            "x": 426.0,
+            "y": 170.0
+          }
+        ]
+      },
+      {
+        "element": {
+          "source": "check_outside",
+          "target": "Flying"
+        },
+        "sourcePosition": "N63",
+        "targetPosition": "S73",
+        "bendpoints": [
+          {
+            "x": 472.0,
+            "y": 173.0
+          }
+        ]
+      },
+      {
+        "element": "hit",
+        "label_x": 60.0,
+        "label_y": -8.0
+      }
+    ]
+  }
+]

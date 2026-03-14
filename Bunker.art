@@ -1,0 +1,150 @@
+capsule Bunker {
+    [[rt::decl]]
+    `
+            int id;
+            // x coordinate of bunker shape position
+            int x;
+            // y coordinate of bunker shape position
+            int y;
+            // height of bunker shape
+            int h { 30 } ;
+            // width of bunker shape
+            int w { 30 } ;
+            bool isDead { false } ;
+            // red value of RGB description of colour of Bunker shape
+            int r { 0 } ;
+            // green value of RGB description of colour of Bunker shape
+            int g { 255 } ;
+            // blue value of RGB description of colour of Bunker shape
+            int b { 0 } ;
+            // heath points i.e., number of times before bunker is 'dead' (i.e., disappears)
+            int healthPoints { 4 } ;
+        protected:
+            char name[ 100 ] { "" } ;
+        public:
+            bool isHit( Location loc );
+            Shape createVisibleShape( int x, int y, int w, int h, int r, int g, int b );
+    `
+    [[rt::impl]]
+    `
+        bool Bunker::isHit( Location loc )  {
+            int x2 = loc.get_X();
+            int y2 = loc.get_Y();
+            return ((x2>=x) && (x2<x+w) && (y2>=y) && (y2<y+h));
+        }
+
+        Shape Bunker::createVisibleShape( int x, int y, int w, int h, int r, int g, int b )  {
+            Shape shape;
+            shape.setVisible(x,y,w,h,r,g,b);
+            return shape;
+        }
+    `
+    service behavior port startP~ : StartGameProt;
+    service behavior port checkHitPlayerP~ : CheckHitProt;
+    service behavior port renderP : RenderProt;
+    service behavior port checkHitEnemyP~ : CheckHitProt;
+    statemachine {
+        state Ready;
+        state Active;
+        state Dead;
+
+        choice check_hitByEnemy;
+        choice check_hitByPlayer;
+        choice check_dead;
+
+        junction junction_0;
+
+        init: initial  ->  Ready
+        `
+            // who am I?
+            id = this->getIndex();
+
+            // my log name is "[B(<id>)]\t"
+            char buffer[100] = "";
+            snprintf(buffer, 100, "[B(%d)]\t", id);
+            strcpy(name, buffer);
+
+            int h_dist = 150;
+            int n_row = 12;
+            int x_start = 30;
+            int y_start = 400;
+            // h = 30;
+            // w = 30;
+
+            // where should I be?
+            int idInGroup = id%8;
+            int group = id/8;
+            int col = idInGroup%3;
+            int row = idInGroup/3;
+            if ((col%3==1)&&(row ==2)) col+=1;
+
+            x = col*w+group*h_dist+x_start;
+            y = row*h+y_start;
+
+            std::cout << name << "up at location (" << x << "," << y << ")" << std::endl;
+        `;
+        start: Ready -> Active on startP.start
+        `
+            Shape shape;
+            // create visible bunker shape
+            // shape.setVisible(x,y,w,h,r,g,b);
+            shape = createVisibleShape(x,y,w,h,r,g,b);
+            // tell 'Top' to render this shape
+            renderP.render(shape).send();
+        `;
+        
+        checkPlayerBullet: Active -> check_hitByPlayer on checkHitPlayerP.check;
+        no1: check_hitByPlayer -> Active;
+        yes1: check_hitByPlayer -> junction_0 when 
+        `
+            Location loc = *rtdata;
+            return (isHit(loc));
+        `
+        `
+            int portId = msg->sapIndex0();
+            std::cout << name << "got hit by player bullet at port " << portId << std::endl;
+
+            // tell player bullet that it hit something
+            checkHitPlayerP.hit().send();
+        `;
+        
+        checkEnemyBullet: Active -> check_hitByEnemy on checkHitEnemyP.check;
+        yes2: check_hitByEnemy -> junction_0 when 
+        `
+            Location loc = *rtdata;
+            return (isHit(loc));
+        `
+        `
+            // at which port can the enemy bullet I got hit by reached?
+            Location loc = *rtdata;
+            int enemyBulletPortId = loc.get_id();
+            // which port did I receive this 'check' request from?
+            int portId = msg->sapIndex0();
+
+            std::cout << name << "got hit by EB at port " << enemyBulletPortId << std::endl;
+
+            // tell that enemy bullet that it hit something
+            checkHitEnemyP.hitById(enemyBulletPortId).sendAt(portId);
+        `;
+        no2: check_hitByEnemy -> Active;
+
+        update: junction_0 -> check_dead
+        `
+            // decrement health points
+            healthPoints--;		
+
+            g = 255/4*healthPoints;	// change color
+
+            // create new visible bunker shape with new colour and tell 'Top' to render it
+            Shape shape = createVisibleShape(x,y,w,h,r,g,b);
+            renderP.render(shape).send();
+        `;
+        yes3: check_dead -> Dead when 
+        `
+            return (healthPoints==0);
+        `;
+        no3: check_dead -> Active;
+
+        ignoreAll: Dead -> Dead on checkHitEnemyP.check, checkHitPlayerP.check;
+    };
+};

@@ -1,0 +1,30 @@
+[
+  {
+    "context": "::Bullet2BunkerConn",
+    "diagramType": "state",
+    "layouts": [
+      {
+        "element": "initial-state",
+        "x": 24.0,
+        "y": 4.0
+      },
+      {
+        "element": "State1",
+        "x": -18.0,
+        "y": 123.0,
+        "w": 121.0,
+        "h": 128.0
+      },
+      {
+        "element": "passingOnHit",
+        "label_x": 64.0,
+        "label_y": 4.0
+      },
+      {
+        "element": "passingOnCheck",
+        "label_x": 76.0,
+        "label_y": 6.0
+      }
+    ]
+  }
+]

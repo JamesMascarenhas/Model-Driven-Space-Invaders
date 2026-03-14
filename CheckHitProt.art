@@ -1,0 +1,10 @@
+protocol CheckHitProt {
+    [[rt::header_preface]]
+    `
+        #include <RTType_Location.h>
+    `
+    out check(`Location`);
+    in hit();
+    in hitById(`int`);
+};
+

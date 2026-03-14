@@ -1,0 +1,96 @@
+[
+  {
+    "context": "::Enemy",
+    "diagramType": "state",
+    "layouts": [
+      {
+        "element": "initial-state",
+        "x": 3.0,
+        "y": 55.0
+      },
+      {
+        "element": "Ready",
+        "x": -19.0,
+        "y": 140.0,
+        "w": 80.0,
+        "h": 50.0
+      },
+      {
+        "element": "Alive",
+        "x": 169.0,
+        "y": 140.0,
+        "w": 299.0,
+        "h": 50.0
+      },
+      {
+        "element": "check_gotHit",
+        "x": 280.0,
+        "y": 13.0
+      },
+      {
+        "element": "Dead",
+        "x": 417.0,
+        "y": 8.0,
+        "w": 119.0,
+        "h": 50.0
+      },
+      {
+        "element": "checkHit",
+        "label_x": -50.0,
+        "label_y": 16.0
+      },
+      {
+        "element": "no1",
+        "label_x": -4.0,
+        "label_y": -30.0
+      },
+      {
+        "element": {
+          "source": "_gotHit__",
+          "target": "Alive"
+        },
+        "sourcePosition": "S63",
+        "targetPosition": "N63"
+      },
+      {
+        "element": {
+          "source": "Alive",
+          "target": "_gotHit__"
+        },
+        "sourcePosition": "N23",
+        "targetPosition": "S50"
+      },
+      {
+        "element": "yes1",
+        "label_x": -10.0,
+        "label_y": -12.0
+      },
+      {
+        "element": "start",
+        "label_x": -24.0,
+        "label_y": -10.0
+      },
+      {
+        "element": "init",
+        "label_x": 19.0,
+        "label_y": -2.0
+      },
+      {
+        "element": {
+          "source": "Alive",
+          "target": "check_gotHit"
+        },
+        "sourcePosition": "N23",
+        "targetPosition": "S28"
+      },
+      {
+        "element": {
+          "source": "check_gotHit",
+          "target": "Alive"
+        },
+        "sourcePosition": "S63",
+        "targetPosition": "N70"
+      }
+    ]
+  }
+]

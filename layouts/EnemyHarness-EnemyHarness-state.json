@@ -1,0 +1,138 @@
+[
+  {
+    "context": "::EnemyHarness",
+    "diagramType": "state",
+    "layouts": [
+      {
+        "element": "initial-state",
+        "x": 64.0,
+        "y": -47.0
+      },
+      {
+        "element": "EnemiesConnecting",
+        "x": 3.0,
+        "y": 42.0,
+        "w": 160.0,
+        "h": 50.0
+      },
+      {
+        "element": "GameOver",
+        "x": 433.0,
+        "y": 390.0,
+        "w": 142.0,
+        "h": 44.0
+      },
+      {
+        "element": "check_allConnected",
+        "x": 74.0,
+        "y": 206.0
+      },
+      {
+        "element": "EnemiesMoving",
+        "x": 255.0,
+        "y": 149.0,
+        "w": 179.0,
+        "h": 50.0,
+        "expanded_w": 149.0,
+        "expanded_h": 144.0
+      },
+      {
+        "element": "EnemiesMoving::State",
+        "x": 68.0,
+        "y": 83.0,
+        "w": 61.3,
+        "h": 41.6
+      },
+      {
+        "element": "EnemiesMoving::entryP1",
+        "x": -4.0,
+        "y": 25.0,
+        "borderPosition": "W52"
+      },
+      {
+        "element": "EnemiesMoving::exitP1",
+        "x": 35.0,
+        "y": 61.0,
+        "borderPosition": "S19"
+      },
+      {
+        "element": "EnemiesMoving::entryP2",
+        "x": 132.0,
+        "y": 63.0,
+        "borderPosition": "S73"
+      },
+      {
+        "element": "check_allEnemiesKilled",
+        "x": 312.0,
+        "y": 393.0
+      },
+      {
+        "element": {
+          "source": "_allConnected__",
+          "target": "EnemiesConnecting"
+        },
+        "sourcePosition": "N38",
+        "targetPosition": "S18"
+      },
+      {
+        "element": {
+          "source": "EnemiesConnecting",
+          "target": "_allConnected__"
+        },
+        "sourcePosition": "S74",
+        "targetPosition": "N50"
+      },
+      {
+        "element": "oneEnemyConnected",
+        "label_x": -46.0,
+        "label_y": 0.0
+      },
+      {
+        "element": "no1",
+        "label_x": 22.0,
+        "label_y": 19.0
+      },
+      {
+        "element": "yes1",
+        "label_x": 27.0,
+        "label_y": 27.0
+      },
+      {
+        "element": "enemyKilled",
+        "label_x": -53.0,
+        "label_y": 10.0
+      },
+      {
+        "element": "no2",
+        "label_x": 35.0,
+        "label_y": -12.0
+      },
+      {
+        "element": "yes2",
+        "label_x": 9.0,
+        "label_y": 27.0
+      },
+      {
+        "element": "ignoreMove",
+        "label_x": 41.0,
+        "label_y": 54.0
+      },
+      {
+        "element": {
+          "source": "check_allConnected",
+          "target": "EnemiesConnecting"
+        },
+        "sourcePosition": "N73",
+        "targetPosition": "S88"
+      },
+      {
+        "element": {
+          "source": "EnemiesConnecting",
+          "target": "check_allConnected"
+        },
+        "sourcePosition": "S19",
+        "targetPosition": "N30"
+      }
+    ]
+  }
+]

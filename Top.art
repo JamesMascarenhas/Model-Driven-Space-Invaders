@@ -1,0 +1,440 @@
+capsule Top {
+    [[rt::header_preface]]
+    `
+        #include <SDL2/SDL.h>
+        #include <SDL2/SDL_ttf.h>
+        #include <time.h>
+    `
+    [[rt::decl]]
+    `
+        SDL_Window* window { NULL } ;
+            SDL_Renderer* renderer { NULL } ;
+            bool quit { false } ;
+            int playerDirection { 0 } ;
+            bool shooting { false } ;
+            SDL_Event currEvent;
+            RTTimerId timerId;
+            // name of file containing TrueType font that SDL will use for text
+            RTString ttfFontFile { "MontereyFLF.ttf" } ;
+            // time (in nanoseconds) between checking for keyboard input; used to set a periodic timer
+            int INPUT_PROCESSING_DELAY { 10000000 } ;
+        protected:
+            char name[ 100 ] { "[T] \t" } ;
+        public:
+            void displayGameOver( void );
+            void displayWelcome( void );
+            void displayPlayerWins( void );
+            void displayPlayerLoses( void );
+    `
+    [[rt::impl]]
+    `
+        void Top::displayGameOver( void )  {
+            // create 'Game Over' message =====================
+
+            // opens a font style and sets a size
+            TTF_Font* font = TTF_OpenFont("MontereyFLF.ttf", 48);
+            if (!font) {
+                std::cout << name << "TTF_OpenFont: " << SDL_GetError() << std::endl;	
+                exit(0);
+            }
+
+            // define colour in RGB format
+            SDL_Color white = {255, 255, 255};
+
+            // create surface
+            SDL_Surface* txt = TTF_RenderText_Solid(font, "Game Over", white);
+            if (!txt) {
+                std::cout << name << "TTF_RenderText_Solid: " << SDL_GetError() << std::endl;	
+                exit(0);
+            }
+
+            // convert surface into a texture
+            SDL_Texture* msg = SDL_CreateTextureFromSurface(renderer, txt);
+
+            SDL_Rect msg_rect; 	// create a rectangle for text, (0,0) is top left
+            msg_rect.x = 130;  	// rect's x coordinate
+            msg_rect.y = 275; 	// rect's y coordinte
+            msg_rect.w = 350; 	// width of the rect
+            msg_rect.h = 130; 	// height of the rect
+
+            // third argument is 'crop size' which we can ignore
+            SDL_RenderCopy(renderer, msg, NULL, &msg_rect);
+
+            // surface not needed anymore
+            SDL_FreeSurface(txt);
+            SDL_DestroyTexture(msg);
+
+            // update screen
+            SDL_RenderPresent( renderer );
+        }
+
+        void Top::displayWelcome( void )  {
+            // use SDL TTF library to display welcome message on screen
+
+            // initialize TTF library
+            TTF_Init();
+
+            // open font style and set size
+            TTF_Font* font = TTF_OpenFont(ttfFontFile, 48);
+            if (!font) {
+                char * fontFile = ttfFontFile;
+                std::cout << name << "TTF_OpenFont: " << SDL_GetError() << std::endl;
+                std::cout << name << "TTF_OpenFont: Expecting '" << fontFile << "' in current working directory" << std::endl;	
+                exit(0);
+            }
+
+            // define color to be used
+            SDL_Color white = {255, 255, 255};
+
+            // create text as surface first
+            SDL_Surface* txt1 = TTF_RenderText_Solid(font, "Welcome to Space Invaders", white);
+            SDL_Surface* txt2 = TTF_RenderText_Solid(font, "Use arrow keys (up=shoot,down=quit)", white);
+            SDL_Surface* txt3 = TTF_RenderText_Solid(font, "Any key to continue", white);
+            if (!txt1 | !txt2 | !txt3) {
+                std::cout << name << "TTF_RenderText_Solid: " << SDL_GetError() << std::endl;	
+                exit(0);
+            }
+
+            // convert surface into a texture
+            SDL_Texture* msg1 = SDL_CreateTextureFromSurface(renderer, txt1);
+            SDL_Texture* msg2 = SDL_CreateTextureFromSurface(renderer, txt2);
+            SDL_Texture* msg3 = SDL_CreateTextureFromSurface(renderer, txt3);
+
+            SDL_Rect msg1_rect; 	// create a rect for txt1
+            msg1_rect.x = 50;  		// controls the rect's x coordinate, (0,0) is on the top left of the window/screen
+            msg1_rect.y = 50; 		// controls the rect's y coordinate
+            msg1_rect.w = 500; 		// controls the width of the rect
+            msg1_rect.h = 100; 		// controls the height of the rect
+
+            SDL_Rect msg2_rect; 	//create a rect for txt2
+            msg2_rect.x = 10;
+            msg2_rect.y = 200;
+            msg2_rect.w = 580;
+            msg2_rect.h = 50;
+
+            SDL_Rect msg3_rect; 	//create a rect for txt3
+            msg3_rect.x = 175;
+            msg3_rect.y = 300;
+            msg3_rect.w = 250;
+            msg3_rect.h = 50;
+
+            SDL_RenderCopy(renderer, msg1, NULL, &msg1_rect);
+            SDL_RenderCopy(renderer, msg2, NULL, &msg2_rect);
+            SDL_RenderCopy(renderer, msg3, NULL, &msg3_rect);
+
+            // not needed anymore
+            SDL_FreeSurface(txt1);
+            SDL_DestroyTexture(msg1);
+            SDL_FreeSurface(txt2);
+            SDL_DestroyTexture(msg2);
+            SDL_FreeSurface(txt3);
+            SDL_DestroyTexture(msg3);
+
+            // update screen
+            SDL_RenderPresent(renderer);
+        }  // end displayWelcome()
+
+        void Top::displayPlayerWins( void )  {
+            // create 'Player Wins' message =====================
+
+            // opens a font style and sets a size
+            TTF_Font* font = TTF_OpenFont("MontereyFLF.ttf", 24);
+            if (!font) {
+                std::cout << name << "TTF_OpenFont: " << SDL_GetError() << std::endl;	
+                exit(0);
+            }
+
+            // define colour in RGB format
+            SDL_Color white = {255, 255, 255};
+
+            // create surface
+            SDL_Surface* txt = TTF_RenderText_Solid(font, "Player Wins", white);
+            if (!txt) {
+                std::cout << name << "TTF_RenderText_Solid: " << SDL_GetError() << std::endl;	
+                exit(0);
+            }
+
+            // convert surface into a texture
+            SDL_Texture* msg = SDL_CreateTextureFromSurface(renderer, txt);
+
+            SDL_Rect msg_rect; 	// create a rectangle for text, (0,0) is top left
+            msg_rect.x = 130;  	// rect's x coordinate
+            msg_rect.y = 485; 	// rect's y coordinate
+            msg_rect.w = 340; 	// width of the rect
+            msg_rect.h = 70; 	// height of the rect
+
+            // third argument is 'crop size' which we can ignore
+            SDL_RenderCopy(renderer, msg, NULL, &msg_rect);
+
+            // not needed anymore
+            SDL_FreeSurface(txt);
+            SDL_DestroyTexture(msg);
+
+            // update screen
+            SDL_RenderPresent(renderer);
+        }  // end displayPlayerWins()
+
+        void Top::displayPlayerLoses( void )  {
+            // create 'Player Loses' message =====================
+
+            // opens a font style and sets a size
+            TTF_Font* font = TTF_OpenFont("MontereyFLF.ttf", 24);
+            if (!font) {
+                std::cout << name << "TTF_OpenFont: " << SDL_GetError() << std::endl;	
+                exit(0);
+            }
+
+            // define colour in RGB format
+            SDL_Color white = {255, 255, 255};
+
+            // create surface
+            SDL_Surface* txt = TTF_RenderText_Solid(font, "Player Loses", white);
+            if (!txt) {
+                std::cout << name << "TTF_RenderText_Solid: " << SDL_GetError() << std::endl;
+                exit(0);
+            }
+
+            // convert surface into a texture
+            SDL_Texture* msg = SDL_CreateTextureFromSurface(renderer, txt);
+
+            SDL_Rect msg_rect; 	// create a rectangle for text, (0,0) is top left
+            msg_rect.x = 130;  	// rect's x coordinate
+            msg_rect.y = 485; 	// rect's y coordinate
+            msg_rect.w = 340; 	// width of the rect
+            msg_rect.h = 70; 	// height of the rect
+
+            // third argument is 'crop size' which we can ignore
+            SDL_RenderCopy(renderer, msg, NULL, &msg_rect);
+
+            // not needed anymore
+            SDL_FreeSurface(txt);
+            SDL_DestroyTexture(msg);
+
+            // update screen
+            SDL_RenderPresent(renderer);
+        }  // end displayPlayerLoses()
+    `
+    behavior port timerP : Timing;
+    behavior port inputP : PlayerInputProt;
+    behavior port startGameP : StartGameProt [88];
+    behavior port renderP~ : RenderProt [92];
+    behavior port endGameP~ : EndGameProt [57];
+    fixed part player : Player;
+    fixed part pBullet : PlayerBullet;
+    fixed part enemy : Enemy[55];
+    fixed part enemyH : EnemyHarness;
+    fixed part eBullet : EnemyBullet[3];
+    fixed part bunker : Bunker[32];
+    fixed part eB2B : Bullet2BunkerConn;
+    fixed part e2B : Enemy2BulletConn;
+    connect bunker.renderP with renderP;
+    connect player.shootP with pBullet.shootP;
+    connect player.renderP with renderP;
+    connect pBullet.renderP with renderP;
+    connect eBullet.renderP with renderP;
+    connect enemy.renderP with renderP;
+    connect enemy.startGameP with startGameP;
+    connect player.startGameP with startGameP;
+    connect bunker.startP with startGameP;
+    connect enemy.shootP with e2B.inP;
+    connect inputP with player.inputP;
+    connect endGameP with player.endGameP;
+    connect endGameP with enemy.endGameP;
+    connect endGameP with enemyH.endGameP;
+    connect enemy.harnessP with enemyH.harnessP;
+    connect pBullet.checkHitEnemyP with enemy.checkHitEnemyP;
+    connect player.checkHitPlayerP with eBullet.checkHitPlayerP;
+    connect bunker.checkHitEnemyP with eB2B.bunkerP;
+    connect eB2B.bulletP with eBullet.checkHitBunkerP;
+    connect pBullet.checkHitBunkerP with bunker.checkHitPlayerP;
+    connect e2B.outP with eBullet.shootP;
+    statemachine {
+        state Ready {
+            entry
+            `
+                timerP.informIn(RTTimespec(0,1000));
+            `;
+        };
+        state Playing;
+        state ProcessInput {
+            entrypoint entryP1;
+            exitpoint exitP1;
+            exitpoint exitP2;
+            choice check_inputAvailable;
+            choice check_eventType;
+            choice check_keySym1;
+            choice check_keySym2;
+            junction junct1;
+            junction junct2;
+            processInput: entryP1 -> check_inputAvailable;
+            no: check_inputAvailable -> junct2;
+            yes: check_inputAvailable -> check_eventType when 
+            `
+                return (SDL_PollEvent(&currEvent));
+            `;
+            down1: check_eventType -> check_keySym1 when 
+            `
+                return (currEvent.type==SDL_KEYDOWN);
+            `;
+            up1: check_eventType -> check_keySym2;
+            left: check_keySym1 -> junct1 when 
+            `
+                // https://wiki.libsdl.org/SDL2/SDL_Keycode
+                return (currEvent.key.keysym.sym == SDLK_LEFT);
+            `
+            `
+                playerDirection = -1;
+            `;
+            right: check_keySym1 -> junct1 when 
+            `
+                // https://wiki.libsdl.org/SDL2/SDL_Keycode
+                return (currEvent.key.keysym.sym == SDLK_RIGHT);
+            `
+            `
+                playerDirection = 1;
+            `;
+            up: check_keySym1 -> junct1 when
+            `
+                // https://wiki.libsdl.org/SDL2/SDL_Keycode
+                return (currEvent.key.keysym.sym == SDLK_UP);
+            `
+            `
+                shooting = true;
+            `;
+            else1: check_keySym1 -> junct1;
+
+            left_or_right: check_keySym2 -> junct2 when 
+            `
+                return (currEvent.key.keysym.sym==SDLK_LEFT | currEvent.key.keysym.sym==SDLK_RIGHT);
+            `
+            `
+                // reset player direction to ensure player stops when user stops pressing the key
+                playerDirection = 0;
+            `;
+
+            else2: check_keySym2 -> junct2;
+            trans1: junct1 -> junct2;
+
+            down2: check_keySym1 -> exitP2 when 
+            `
+                // https://wiki.libsdl.org/SDL2/SDL_Keycode
+                return (currEvent.key.keysym.sym == SDLK_DOWN);
+            `
+            `
+                std::cout << name << "user quit" << std::endl;
+                SDL_RenderPresent(renderer);
+            `;
+            update: junct2 -> exitP1
+            `
+                inputP.move(playerDirection).send();
+                SDL_RenderPresent(renderer);
+            `;
+        };
+        state Stop {
+            ignoreAll: on endGameP.*, renderP.*;
+            entry
+            `
+                displayGameOver();
+
+                timerP.cancelTimer(timerId);
+                timerP.informIn(RTTimespec(4,0));
+            `;
+        };
+        state Done;
+        choice check_anyKeyPressed;
+
+        init: initial  ->  Ready
+        `
+            window = NULL; 						// declare a window pointer
+            if (SDL_Init(SDL_INIT_VIDEO) < 0) { // initialize SDL2
+            	std::cout << name << "SDL_INIT_VIDEO: " << SDL_GetError() << std::endl;
+            	std::cout << name << "Did you set the 'DISPLAY' environment variable?" << std::endl;
+            	std::cout << name << "To set: 'export DISPLAY=localhost:0.0' or 'export DISPLAY=:0.0'" << std::endl;	
+                exit(0);
+            }
+
+            srand(time(0));
+            // create a window
+            window = SDL_CreateWindow (
+            	"Fake Space Invaders",      // window title
+            	SDL_WINDOWPOS_UNDEFINED,   	// initial x position, (0,0) is top left corner
+            	SDL_WINDOWPOS_UNDEFINED,   	// initial y position
+            	600,                      	// width, in pixels
+            	800,                      	// height, in pixels
+            	SDL_WINDOW_SHOWN          	// flags
+            );
+            renderer =  SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+
+            displayWelcome();				// use TTF library to display welcome message on screen
+
+            // log of welcome message
+            std::cout << name << "Welcome to Space Invaders" << std::endl;
+            std::cout << name << "Use arrow keys (left=left, right=right, up=shoot, down=quit)" << std::endl;
+            std::cout << name << "Hit any key to continue" << std::endl;
+        `;
+        checkInput: Ready -> check_anyKeyPressed on timerP.timeout;
+        yes: check_anyKeyPressed -> Playing when 
+        `
+            bool start=false;
+            SDL_Event currEvent;
+            while (SDL_PollEvent(&currEvent)) {
+            	if (currEvent.type==SDL_KEYUP) {
+            		start = true;
+            		break;
+            	}
+            };
+            return (start);
+        `
+        `
+            // reset screen
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            SDL_RenderFillRect(renderer, NULL);
+            SDL_RenderPresent(renderer);
+
+            startGameP.start().send();
+            timerId = timerP.informEvery(RTTimespec(0, INPUT_PROCESSING_DELAY));
+        `;
+        no: check_anyKeyPressed -> Ready;
+        processInput: Playing -> ProcessInput.entryP1 on timerP.timeout;
+        render: Playing -> Playing on renderP.render
+        `
+            // receive shape information
+            Shape shape = *rtdata;
+
+            int r = shape.get_r();
+            int g = shape.get_g();
+            int b = shape.get_b();
+            SDL_SetRenderDrawColor(renderer, r, g, b, 255);
+
+            SDL_Rect rect;
+            rect.w = shape.get_w();
+            rect.h = shape.get_h();
+            rect.x = shape.get_X();
+            rect.y = shape.get_Y();
+            SDL_RenderFillRect( renderer, &rect );
+
+            // re-draw the deadline
+            SDL_SetRenderDrawColor( renderer, 255, 0, 0, 255 );
+            SDL_RenderDrawLine( renderer, 0, 400, 600, 400 );
+        `;
+        playerLoses: Playing -> Stop on endGameP.playerLoses
+        `
+            displayPlayerLoses();
+            std::cout << name << "player loses" << std::endl;
+        `;
+        continue: ProcessInput.exitP1 -> Playing;
+        quit: ProcessInput.exitP2 -> Stop;
+        timeout: Stop -> Done on timerP.timeout
+        `
+            std::cout << name << "game over" << std::endl;
+            SDL_DestroyWindow(window);
+            SDL_Quit();
+            exit(-5);
+        `;
+        playerWins: Playing -> Stop on endGameP.playerWins
+        `
+            displayPlayerWins();
+            std::cout << name << "player wins" << std::endl;
+        `;
+    };
+};

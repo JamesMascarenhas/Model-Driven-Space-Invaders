@@ -1,0 +1,22 @@
+capsule Enemy2BulletConn {
+[[rt::decl]]
+    `
+        // x coordinate of current position of EnemyBullet shape
+        int maxNumberOfBullets { 3 };
+        int outPortId { 0 };
+    `    
+    service behavior port inP~ : ShootProt [55];
+    service behavior port outP : ShootProt [3];
+    statemachine {
+        state State1;
+        init: initial  ->  State1;
+        passOnShoot: State1 -> State1 on inP.shoot
+        `
+            Location loc = *rtdata;
+            // tell 'eBullet' connected to outP[outPortId] to become active (if not already)
+            outP.shoot(loc).sendAt(outPortId);
+            // make sure that different bullet is picked next time
+            outPortId = (outPortId+1)%maxNumberOfBullets;
+        `;
+    };
+};

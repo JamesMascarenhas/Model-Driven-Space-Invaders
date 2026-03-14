@@ -1,0 +1,27 @@
+let tc = TCF.define(TCF.ART_TO_CPP);
+tc.topCapsule = 'Top';
+tc.commonPreface = `
+#include <cstring>
+#include <iostream>
+`;
+tc.makeCommand = 'make';
+tc.targetConfiguration = 'MacT.AArch64-Clang-15.x';
+tc.threads = [
+{
+    name: 'MainThread',
+    implClass: 'RTPeerController',
+    stackSize: '20000',
+    priority: 'DEFAULT_MAIN_PRIORITY'
+},
+{
+    name: 'TimerThread',
+    implClass: 'RTTimerController',
+    stackSize: '20000',
+    priority: 'DEFAULT_TIMER_PRIORITY'
+}
+];
+tc.userLibraries = [
+    '-lSDL2',
+    '-lSDL2_TTF'
+];
+tc.targetFolder = 'SpaceInvadersV0_target';

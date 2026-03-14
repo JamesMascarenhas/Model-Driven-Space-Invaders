@@ -1,0 +1,76 @@
+capsule EnemyHarness {
+    [[rt::decl]]
+    `
+            int numAlive { 0 } ;
+            int ROUND_DELAY { 20000000 } ;
+            // direction that enemies are currently going in: 1=right, -1=left, 0=down
+            int direction { 1 } ;
+            int NUM_ENEMIES = 55;
+        protected:
+            char name[ 100 ] { "[H]\t" } ;
+    `
+    service behavior unwired subscribe port moveStartP 
+    [[rt::properties(
+        registration= automatic
+    )]]
+    : MoveEnemyProt;
+    service behavior unwired subscribe port moveEndP~ 
+    [[rt::properties(
+        registration= automatic
+    )]]
+    : MoveEnemyProt;
+    service behavior port harnessP : HarnessProt [55];
+    behavior port timerP : Timing;
+    service behavior port endGameP : EndGameProt;
+    statemachine {
+        init: initial  ->  EnemiesConnecting;
+
+        state EnemiesConnecting {
+            entry
+            `
+                moveStartP.registerSPP("fromHarness");
+                moveEndP.registerSPP("toHarness");
+            `;
+        };
+        oneEnemyConnected: EnemiesConnecting -> check_allConnected on harnessP.ready
+        `
+            // one enemy done connecting
+            numAlive++;
+        `;
+        choice check_allConnected;
+        no1: check_allConnected -> EnemiesConnecting;
+        yes1: check_allConnected -> EnemiesMoving.entryP1 when 
+        `
+            return (numAlive>=NUM_ENEMIES);
+        `;
+ 
+        state EnemiesMoving {
+            entrypoint entryP1;
+            exitpoint exitP1;
+            entrypoint entryP2;
+            state State;
+            start: entryP1 -> State
+            `
+                direction = 1;				// set direction to 'right'
+            `;
+        };
+        enemyKilled: EnemiesMoving.exitP1 -> check_allEnemiesKilled on harnessP.killed
+        `
+            numAlive = numAlive-1;
+            std::cout << name << numAlive << " enemies alive" << std::endl;
+        `;
+        choice check_allEnemiesKilled;
+        no2: check_allEnemiesKilled -> EnemiesMoving.entryP2;
+        yes2: check_allEnemiesKilled -> GameOver when 
+        `
+            return (numAlive==0);
+        `
+        `
+            std::cout << name << "all enemies are dead" << std::endl;
+            endGameP.playerWins().send();
+        `;
+
+        state GameOver;
+        ignoreMove: GameOver -> GameOver on moveEndP.move;
+    };
+};

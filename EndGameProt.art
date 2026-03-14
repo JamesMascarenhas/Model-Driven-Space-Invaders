@@ -1,0 +1,5 @@
+protocol EndGameProt {
+    out playerLoses();
+    out playerWins();
+};
+

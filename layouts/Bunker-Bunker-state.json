@@ -1,0 +1,200 @@
+[
+  {
+    "context": "::Bunker",
+    "diagramType": "state",
+    "layouts": [
+      {
+        "element": "initial-state",
+        "x": 30.0,
+        "y": -33.0
+      },
+      {
+        "element": "Ready",
+        "x": 8.0,
+        "y": 84.0,
+        "w": 80.0,
+        "h": 50.0
+      },
+      {
+        "element": "Active",
+        "x": 151.0,
+        "y": -14.0,
+        "w": 81.0,
+        "h": 246.0
+      },
+      {
+        "element": "check_hitByEnemy",
+        "x": 378.0,
+        "y": 192.0
+      },
+      {
+        "element": "Dead",
+        "x": 544.0,
+        "y": -84.0,
+        "w": 80.0,
+        "h": 50.0
+      },
+      {
+        "element": "check_hitByPlayer",
+        "x": 424.0,
+        "y": 93.0
+      },
+      {
+        "element": "junction_0",
+        "x": 569.0,
+        "y": 165.0
+      },
+      {
+        "element": "check_dead",
+        "x": 562.0,
+        "y": 21.0
+      },
+      {
+        "element": {
+          "source": "_dead__",
+          "target": "Active"
+        },
+        "sourcePosition": "W50",
+        "targetPosition": "E22"
+      },
+      {
+        "element": "update",
+        "label_x": 21.0,
+        "label_y": 42.0
+      },
+      {
+        "element": {
+          "source": "Active",
+          "target": "_hitByEnemy__"
+        },
+        "sourcePosition": "E89",
+        "targetPosition": "W63"
+      },
+      {
+        "element": {
+          "source": "_hitByEnemy__",
+          "target": "Active"
+        },
+        "sourcePosition": "W38",
+        "targetPosition": "E70"
+      },
+      {
+        "element": {
+          "source": "_hitByPlayer__",
+          "target": "Active"
+        },
+        "sourcePosition": "W38",
+        "targetPosition": "E31"
+      },
+      {
+        "element": {
+          "source": "Active",
+          "target": "_hitByPlayer__"
+        },
+        "sourcePosition": "E58",
+        "targetPosition": "W63"
+      },
+      {
+        "element": "checkEnemyBullet",
+        "label_x": -4.0,
+        "label_y": 27.0
+      },
+      {
+        "element": "no1",
+        "label_x": 71.0,
+        "label_y": -3.0
+      },
+      {
+        "element": "no3",
+        "label_x": 134.0,
+        "label_y": -10.0
+      },
+      {
+        "element": "start",
+        "label_x": 0.0,
+        "label_y": -10.0
+      },
+      {
+        "element": {
+          "source": "_hitByPlayer__",
+          "target": "junction_0"
+        },
+        "sourcePosition": "E70",
+        "targetPosition": "N29"
+      },
+      {
+        "element": {
+          "source": "Active",
+          "target": "check_hitByEnemy"
+        },
+        "sourcePosition": "E92",
+        "targetPosition": "W63"
+      },
+      {
+        "element": {
+          "source": "check_hitByEnemy",
+          "target": "Active"
+        },
+        "sourcePosition": "W38",
+        "targetPosition": "E78"
+      },
+      {
+        "element": {
+          "source": "check_dead",
+          "target": "Active"
+        },
+        "sourcePosition": "W50",
+        "targetPosition": "E24"
+      },
+      {
+        "element": "yes2",
+        "label_x": -24.0,
+        "label_y": 28.0
+      },
+      {
+        "element": "no2",
+        "label_x": 56.0,
+        "label_y": 5.0
+      },
+      {
+        "element": {
+          "source": "check_hitByPlayer",
+          "target": "Active"
+        },
+        "sourcePosition": "W25",
+        "targetPosition": "E43"
+      },
+      {
+        "element": {
+          "source": "Active",
+          "target": "check_hitByPlayer"
+        },
+        "sourcePosition": "E66",
+        "targetPosition": "W70"
+      },
+      {
+        "element": "checkPlayerBullet",
+        "label_x": -2.0,
+        "label_y": 22.0
+      },
+      {
+        "element": "yes1",
+        "label_x": -7.0,
+        "label_y": -40.0
+      },
+      {
+        "element": {
+          "source": "check_hitByPlayer",
+          "target": "junction_0"
+        },
+        "sourcePosition": "E70",
+        "targetPosition": "W29"
+      },
+      {
+        "element": "yes3",
+        "label_x": 25.0,
+        "label_y": 15.0
+      }
+    ]
+  }
+]

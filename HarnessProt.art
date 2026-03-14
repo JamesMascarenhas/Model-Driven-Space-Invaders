@@ -1,0 +1,6 @@
+protocol HarnessProt {
+    in changeDirection(`int`);
+    in killed();
+    in ready();
+};
+

@@ -1,0 +1,140 @@
+[
+  {
+    "context": "::Player",
+    "diagramType": "state",
+    "layouts": [
+      {
+        "element": "initial-state",
+        "x": 1.0,
+        "y": -117.0
+      },
+      {
+        "element": "Ready",
+        "x": -21.0,
+        "y": 10.0,
+        "w": 80.0,
+        "h": 50.0
+      },
+      {
+        "element": "Alive",
+        "x": 139.0,
+        "y": -21.0,
+        "w": 92.0,
+        "h": 111.0
+      },
+      {
+        "element": "check_livesLeft",
+        "x": 515.0,
+        "y": 13.0
+      },
+      {
+        "element": "Dead",
+        "x": 492.0,
+        "y": -148.0,
+        "w": 80.0,
+        "h": 50.0
+      },
+      {
+        "element": "check_gotHit",
+        "x": 164.0,
+        "y": 250.0
+      },
+      {
+        "element": "check_invincible",
+        "x": 509.0,
+        "y": 247.0
+      },
+      {
+        "element": "junct",
+        "x": 358.0,
+        "y": 20.0
+      },
+      {
+        "element": "no3",
+        "label_x": 23.0,
+        "label_y": -4.0
+      },
+      {
+        "element": "check",
+        "label_x": -31.0,
+        "label_y": -38.0
+      },
+      {
+        "element": "start",
+        "label_x": 0.0,
+        "label_y": -6.0
+      },
+      {
+        "element": "init",
+        "label_x": 21.0,
+        "label_y": 4.0
+      },
+      {
+        "element": "yes2",
+        "label_x": 24.0,
+        "label_y": -10.0
+      },
+      {
+        "element": "no2",
+        "label_x": 25.0,
+        "label_y": 2.0
+      },
+      {
+        "element": "yes3",
+        "label_x": 2.0,
+        "label_y": -13.0
+      },
+      {
+        "element": "invincibleEnd",
+        "label_x": 16.0,
+        "label_y": 8.0
+      },
+      {
+        "element": "transition_0junction_0",
+        "label_x": 24.0,
+        "label_y": -9.0
+      },
+      {
+        "element": "move",
+        "label_x": 6.0,
+        "label_y": -19.0
+      },
+      {
+        "element": "no3",
+        "label_x": -20.0,
+        "label_y": -4.0
+      },
+      {
+        "element": "yes3",
+        "label_x": 5.0,
+        "label_y": -9.0
+      },
+      {
+        "element": {
+          "source": "check_gotHit",
+          "target": "Alive"
+        },
+        "sourcePosition": "N65",
+        "targetPosition": "S82"
+      },
+      {
+        "element": {
+          "source": "Alive",
+          "target": "check_gotHit"
+        },
+        "sourcePosition": "S26",
+        "targetPosition": "N28"
+      },
+      {
+        "element": "yes1",
+        "label_x": -4.0,
+        "label_y": -15.0
+      },
+      {
+        "element": "no1",
+        "label_x": 24.0,
+        "label_y": 4.0
+      }
+    ]
+  }
+]

@@ -1,0 +1,137 @@
+[
+  {
+    "context": "::PlayerBullet",
+    "diagramType": "state",
+    "layouts": [
+      {
+        "element": "initial-state",
+        "x": 80.0,
+        "y": -83.0
+      },
+      {
+        "element": "Waiting",
+        "x": 53.0,
+        "y": 23.0,
+        "w": 90.0,
+        "h": 263.0
+      },
+      {
+        "element": "Flying",
+        "x": 406.0,
+        "y": 40.0,
+        "w": 83.0,
+        "h": 115.0
+      },
+      {
+        "element": "check_outside",
+        "x": 428.0,
+        "y": 244.0
+      },
+      {
+        "element": {
+          "source": "_outside__",
+          "target": "Waiting"
+        },
+        "sourcePosition": "W50",
+        "targetPosition": "E93"
+      },
+      {
+        "element": "ignoreShoot",
+        "label_x": 69.0,
+        "label_y": 16.0
+      },
+      {
+        "element": {
+          "source": "Flying",
+          "target": "Waiting"
+        },
+        "sourcePosition": "W53",
+        "targetPosition": "E29"
+      },
+      {
+        "element": {
+          "source": "Waiting",
+          "target": "Flying"
+        },
+        "sourcePosition": "E43",
+        "targetPosition": "W84"
+      },
+      {
+        "element": "ignoreHit",
+        "label_x": 37.0,
+        "label_y": -20.0
+      },
+      {
+        "element": "ignoreUpdateTimeout",
+        "label_x": 84.0,
+        "label_y": 5.0
+      },
+      {
+        "element": "yes",
+        "label_x": 113.0,
+        "label_y": 22.0
+      },
+      {
+        "element": "init",
+        "label_x": -19.0,
+        "label_y": -1.0
+      },
+      {
+        "element": {
+          "source": "check_outside",
+          "target": "Waiting"
+        },
+        "sourcePosition": "W50",
+        "targetPosition": "E92"
+      },
+      {
+        "element": {
+          "source": "Flying",
+          "target": "check_outside"
+        },
+        "sourcePosition": "S44",
+        "targetPosition": "N38",
+        "bendpoints": [
+          {
+            "x": 420.0,
+            "y": 194.0
+          }
+        ]
+      },
+      {
+        "element": {
+          "source": "check_outside",
+          "target": "Flying"
+        },
+        "sourcePosition": "N63",
+        "targetPosition": "S56",
+        "bendpoints": [
+          {
+            "x": 472.0,
+            "y": 192.0
+          }
+        ]
+      },
+      {
+        "element": "update",
+        "label_x": -29.0,
+        "label_y": 18.0
+      },
+      {
+        "element": "no",
+        "label_x": 8.0,
+        "label_y": 52.0
+      },
+      {
+        "element": "hit",
+        "label_x": 94.0,
+        "label_y": -7.0
+      },
+      {
+        "element": "shoot",
+        "label_x": -74.0,
+        "label_y": -7.0
+      }
+    ]
+  }
+]

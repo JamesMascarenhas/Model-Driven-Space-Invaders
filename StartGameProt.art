@@ -1,0 +1,4 @@
+protocol StartGameProt {
+    out start();
+};
+

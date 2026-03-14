@@ -1,0 +1,131 @@
+capsule EnemyBullet {
+    [[rt::decl]]
+    `
+            // x coordinate of current position of EnemyBullet shape
+            int x { 0 } ;
+            // y coordinate of current position of EnemyBullet shape
+            int y { 0 } ;
+            // speed of EnemnyBullet shape
+            int speed { 4 } ;
+            // height of EnemyBullet shape
+            int h { 5 } ;
+            // width of EnemyBullet shape
+            int w;
+            // y-coordinate of player position; used to determine when bullet has passed player and needs to be removed
+            int playerYValue { 550 } ;
+            // red value of RGB description of EnemyBullet shape (depends on id)
+            int r;
+            // green value of RGB description of EnemyBullet shape (depends on id)
+            int g;
+            // blue value of RGB description of EnemyBullet shape (depends on id)
+            int b { 5 } ;
+            // number of nsecs delay between updates of the location of a flying bullet
+            int UPDATE_DELAY { 10000000 } ;
+            int id;
+        protected:
+            char name[ 100 ] { "" } ;
+        public:
+            Shape createInvisibleShape( int x, int y, int w, int h );
+            Shape createVisibleShape( int x, int y, int w, int h, int r, int g, int b );
+    `
+    [[rt::impl]]
+    `
+        Shape EnemyBullet::createInvisibleShape( int x, int y, int w, int h )  {
+            Shape shape;
+            shape.setInvisible(x,y,w,h);
+            return shape;
+        }
+
+        Shape EnemyBullet::createVisibleShape( int x, int y, int w, int h, int r, int g, int b )  {
+            Shape shape;
+            shape.setVisible(x,y,w,h,r,g,b);
+            return shape;
+        }
+    `
+    service behavior port checkHitPlayerP : CheckHitProt;
+    service behavior port renderP : RenderProt;
+    behavior port timerP : Timing;
+    service behavior port shootP~ : ShootProt;
+    service behavior port checkHitBunkerP : CheckHitProt;
+    statemachine {
+        state Waiting;
+        state Flying;
+        choice check_outside;
+        
+        init: initial  ->  Waiting
+        `
+            // who am I? 
+            id = this->getIndex();
+
+            // my log name is "[EB(<id>)]\t"
+            char buffer[100] = "";
+            snprintf(buffer, 100, "[EB(%d)]\t", id);
+            strcpy(name, buffer);
+
+            std::cout << name << "up" << std::endl;
+
+            // set colour
+            r = (id==0)*255;
+            b = (id==2)*255;
+            g = (id==1)*255;
+
+            // x = 0;		// temporary
+            // y = 0;		// temporary
+
+            // set update timer
+            timerP.informEvery(RTTimespec(0, UPDATE_DELAY));
+        `;
+        shoot: Waiting -> Flying on shootP.shoot
+        `
+            Location startLoc = *rtdata;
+            x = startLoc.get_X();
+            y = startLoc.get_Y();
+            int bId = startLoc.get_id();
+            int portId = msg->sapIndex0();
+
+            std::cout << name << "flying from E(" << bId << ") at (" << x << "," << y << ")" << std::endl;
+        `;
+        hit: Flying -> Waiting on checkHitBunkerP.hit, checkHitPlayerP.hit
+        `
+            std::cout << name << "I hit something" << std::endl;
+
+            // make this bullet disappear
+            Shape shape = createInvisibleShape(x,y,w,h);
+            renderP.render(shape).send();
+        `;
+        update: Flying -> check_outside on timerP.timeout
+        `
+            // make this bullet disappear at its current location
+            Shape shape = createInvisibleShape(x,y,w,h);
+            renderP.render(shape).send();
+
+            y = y+speed;	// compute new location
+
+            // tell 'Top' to make this bullet visible at new location
+            // make this bullet appear at its new location
+            shape = createVisibleShape(x,y,w,h,r,g,b);
+            renderP.render(shape).send();
+
+            // tell hittable objects (bunker and player) to check for collision with this bullet
+            Location loc;
+            loc.set_X(x+w/2);
+            loc.set_Y(y+h/2);
+            loc.set_id(id);
+            checkHitPlayerP.check(loc).send();
+            checkHitBunkerP.check(loc).send();
+        `;
+        no: check_outside -> Flying;
+        yes: check_outside -> Waiting when 
+        `
+            return (y >= playerYValue+10);
+        `
+        `
+            // make this bullet disappear
+            Shape shape = createInvisibleShape(x,y,w,h);
+            renderP.render(shape).send();
+        `;
+        ignoreHit: Waiting -> Waiting on checkHitBunkerP.hit, checkHitPlayerP.hit;
+        ignoreUpdateTimeout: Waiting -> Waiting on timerP.timeout;
+        ignoreShoot: Flying -> Flying on shootP.shoot;
+    };
+};

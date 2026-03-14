@@ -1,0 +1,6 @@
+SpaceInvadersV0_target/
+*.o
+Top
+*.exe
+.DS_Store
+.vscode/

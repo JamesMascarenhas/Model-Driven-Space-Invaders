@@ -1,0 +1,8 @@
+protocol RenderProt {
+    [[rt::header_preface]]
+    `
+        #include <RTType_Shape.h>
+    `
+    out render(`Shape`);
+};
+

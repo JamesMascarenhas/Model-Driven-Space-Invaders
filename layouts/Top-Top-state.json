@@ -1,0 +1,392 @@
+[
+  {
+    "context": "::Top",
+    "diagramType": "state",
+    "layouts": [
+      {
+        "element": "initial-state",
+        "x": 26.0,
+        "y": -30.0
+      },
+      {
+        "element": "Ready",
+        "x": 4.0,
+        "y": 69.0,
+        "w": 80.0,
+        "h": 120.0
+      },
+      {
+        "element": "Playing",
+        "x": 296.0,
+        "y": 65.0,
+        "w": 87.0,
+        "h": 133.0
+      },
+      {
+        "element": "Done",
+        "x": 448.0,
+        "y": 730.0,
+        "w": 80.0,
+        "h": 50.0
+      },
+      {
+        "element": "ProcessInput",
+        "x": 631.0,
+        "y": -56.0,
+        "w": 102.0,
+        "h": 50.0,
+        "expanded_w": 362.0,
+        "expanded_h": 587.0
+      },
+      {
+        "element": "ProcessInput::_inputAvailable__",
+        "x": 74.0,
+        "y": 230.0
+      },
+      {
+        "element": "ProcessInput::_eventType__",
+        "x": 180.0,
+        "y": 230.0
+      },
+      {
+        "element": "ProcessInput::_keySym__",
+        "x": 288.0,
+        "y": 230.0
+      },
+      {
+        "element": "ProcessInput::_keySym___1",
+        "x": 180.0,
+        "y": 146.0
+      },
+      {
+        "element": "ProcessInput::junction_0",
+        "x": 455.0,
+        "y": 158.0
+      },
+      {
+        "element": "ProcessInput::junction_0_1",
+        "x": 455.0,
+        "y": 74.0
+      },
+      {
+        "element": "ProcessInput::entryP1",
+        "x": -4.0,
+        "y": 30.0,
+        "borderPosition": "W50"
+      },
+      {
+        "element": "ProcessInput::exitP1",
+        "x": -4.0,
+        "y": 2.0,
+        "borderPosition": "W10"
+      },
+      {
+        "element": "ProcessInput::exitP2",
+        "x": 50.0,
+        "y": 36.0,
+        "borderPosition": "S80"
+      },
+      {
+        "element": "Stop",
+        "x": 660.0,
+        "y": 691.0,
+        "w": 183.0,
+        "h": 81.0
+      },
+      {
+        "element": "check_anyKeyPressed",
+        "x": 182.0,
+        "y": 95.0
+      },
+      {
+        "element": {
+          "source": "ProcessInput::exitP1",
+          "target": "Playing"
+        },
+        "sourcePosition": "W50",
+        "targetPosition": "E5"
+      },
+      {
+        "element": {
+          "source": "Playing",
+          "target": "Stop"
+        },
+        "sourcePosition": "E61",
+        "targetPosition": "W14",
+        "bendpoints": [
+          {
+            "x": 533.0,
+            "y": 486.0
+          }
+        ]
+      },
+      {
+        "element": {
+          "source": "Playing",
+          "target": "Stop"
+        },
+        "sourcePosition": "E88",
+        "targetPosition": "W60",
+        "bendpoints": [
+          {
+            "x": 494.0,
+            "y": 600.0
+          }
+        ]
+      },
+      {
+        "element": "quit",
+        "label_x": -25.0,
+        "label_y": 4.0
+      },
+      {
+        "element": {
+          "source": "_anyKeyPressed__",
+          "target": "Ready"
+        },
+        "sourcePosition": "W38",
+        "targetPosition": "E26"
+      },
+      {
+        "element": {
+          "source": "Ready",
+          "target": "_anyKeyPressed__"
+        },
+        "sourcePosition": "E83",
+        "targetPosition": "W63"
+      },
+      {
+        "element": "checkInput",
+        "label_x": 29.0,
+        "label_y": 23.0
+      },
+      {
+        "element": "yes",
+        "label_x": -12.0,
+        "label_y": -9.0
+      },
+      {
+        "element": "no",
+        "label_x": 1.0,
+        "label_y": -12.0
+      },
+      {
+        "element": "init",
+        "label_x": 18.0,
+        "label_y": 1.0
+      },
+      {
+        "element": "continue",
+        "label_x": -30.0,
+        "label_y": -7.0
+      },
+      {
+        "element": "processInput",
+        "label_x": 65.0,
+        "label_y": 1.0
+      },
+      {
+        "element": "render",
+        "label_x": 35.0,
+        "label_y": 0.0
+      },
+      {
+        "element": "playerLoses",
+        "label_x": 13.0,
+        "label_y": -12.0
+      },
+      {
+        "element": "playerWins",
+        "label_x": 16.0,
+        "label_y": 79.0
+      },
+      {
+        "element": {
+          "source": "check_anyKeyPressed",
+          "target": "Ready"
+        },
+        "sourcePosition": "W28",
+        "targetPosition": "E18"
+      },
+      {
+        "element": {
+          "source": "Ready",
+          "target": "check_anyKeyPressed"
+        },
+        "sourcePosition": "E79",
+        "targetPosition": "W73"
+      },
+      {
+        "element": {
+          "source": "check_anyKeyPressed",
+          "target": "Playing"
+        },
+        "sourcePosition": "E50",
+        "targetPosition": "W38"
+      },
+      {
+        "element": "ProcessInput::check_inputAvailable",
+        "x": 97.0,
+        "y": 272.0
+      },
+      {
+        "element": "ProcessInput::junct2",
+        "x": 101.0,
+        "y": 68.0
+      },
+      {
+        "element": "ProcessInput::check_keySym2",
+        "x": 266.0,
+        "y": 70.0
+      },
+      {
+        "element": "ProcessInput::check_eventType",
+        "x": 268.0,
+        "y": 272.0
+      },
+      {
+        "element": {
+          "source": "Stop",
+          "target": "Done"
+        },
+        "sourcePosition": "W79",
+        "targetPosition": "E50"
+      },
+      {
+        "element": {
+          "source": "Playing",
+          "target": "ProcessInput::entryP1"
+        },
+        "sourcePosition": "E48",
+        "targetPosition": "W50",
+        "bendpoints": [
+          {
+            "x": 534.0,
+            "y": 96.0
+          }
+        ]
+      },
+      {
+        "element": "ProcessInput::check_keySym1",
+        "x": 270.0,
+        "y": 402.0
+      },
+      {
+        "element": "ProcessInput::junct1",
+        "x": 155.0,
+        "y": 372.0
+      },
+      {
+        "element": {
+          "source": "ProcessInput::check_keySym1",
+          "target": "ProcessInput::junct1"
+        },
+        "sourcePosition": "N38",
+        "targetPosition": "E25",
+        "bendpoints": [
+          {
+            "x": 237.0,
+            "y": 372.0
+          }
+        ]
+      },
+      {
+        "element": {
+          "source": "ProcessInput::check_keySym1",
+          "target": "ProcessInput::junct1"
+        },
+        "sourcePosition": "W45",
+        "targetPosition": "E75"
+      },
+      {
+        "element": {
+          "source": "ProcessInput::check_keySym1",
+          "target": "ProcessInput::junct1"
+        },
+        "sourcePosition": "S25",
+        "targetPosition": "S38",
+        "bendpoints": [
+          {
+            "x": 211.0,
+            "y": 435.0
+          }
+        ]
+      },
+      {
+        "element": "ProcessInput::right",
+        "label_x": -1.0,
+        "label_y": -10.0
+      },
+      {
+        "element": "ProcessInput::else1",
+        "label_x": -49.0,
+        "label_y": -2.0
+      },
+      {
+        "element": "ProcessInput::left",
+        "label_x": -28.0,
+        "label_y": -4.0
+      },
+      {
+        "element": "ProcessInput::up1",
+        "label_x": -23.0,
+        "label_y": -1.0
+      },
+      {
+        "element": "ProcessInput::no",
+        "label_x": -20.0,
+        "label_y": -1.0
+      },
+      {
+        "element": "ProcessInput::processInput",
+        "label_x": 5.0,
+        "label_y": 27.0
+      },
+      {
+        "element": {
+          "source": "ProcessInput::junct1",
+          "target": "ProcessInput::junct2"
+        },
+        "sourcePosition": "N50",
+        "targetPosition": "S71",
+        "bendpoints": [
+          {
+            "x": 166.0,
+            "y": 166.0
+          }
+        ]
+      },
+      {
+        "element": {
+          "source": "ProcessInput::check_keySym2",
+          "target": "ProcessInput::junct2"
+        },
+        "sourcePosition": "W48",
+        "targetPosition": "E83"
+      },
+      {
+        "element": {
+          "source": "ProcessInput::check_keySym2",
+          "target": "ProcessInput::junct2"
+        },
+        "sourcePosition": "N33",
+        "targetPosition": "N79"
+      },
+      {
+        "element": "ProcessInput::else2",
+        "label_x": 51.0,
+        "label_y": -5.0
+      },
+      {
+        "element": "ProcessInput::left_or_right",
+        "label_x": 22.0,
+        "label_y": 19.0
+      },
+      {
+        "element": "timeout",
+        "label_x": 2.0,
+        "label_y": 20.0
+      }
+    ]
+  }
+]
