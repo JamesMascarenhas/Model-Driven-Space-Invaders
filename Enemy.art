@@ -205,6 +205,28 @@ capsule Enemy {
             // tell harness that done connecting
             harnessP.ready().send();
         `;
+
+        moveAlive: Alive -> Alive on movePrevP.move
+        `
+            direction = *rtdata;
+
+            Shape shape = createInvisibleShape(x,y,w,h);
+            renderP.render(shape).send();
+
+            updateLocation();
+
+            shape = createVisibleShape(x,y,w,h,r,g,b);
+            renderP.render(shape).send();
+
+            if (direction == 1 && atRightBorder()) {
+                harnessP.changeDirection(direction).send();
+            }
+            else if (direction == -1 && atLeftBorder()) {
+                harnessP.changeDirection(direction).send();
+            }
+
+            moveNextP.move(direction).send();
+        `;
         checkHit: Alive -> check_gotHit on checkHitEnemyP.check;
         no1: check_gotHit -> Alive;
         yes1: check_gotHit -> Dead when 
@@ -227,5 +249,11 @@ capsule Enemy {
             renderP.render(shape).send();
         `;
         ignoreCheck: Dead -> Dead on checkHitEnemyP.check;
+
+        moveDead: Dead -> Dead on movePrevP.move
+        `
+            direction = *rtdata;
+            moveNextP.move(direction).send();
+        `;
     };
 };
