@@ -303,13 +303,19 @@ capsule Top {
             `;
             else1: check_keySym1 -> junct1;
 
-            left_or_right: check_keySym2 -> junct2 when 
+            left_or_right_or_up: check_keySym2 -> junct2 when 
             `
-                return (currEvent.key.keysym.sym==SDLK_LEFT | currEvent.key.keysym.sym==SDLK_RIGHT);
+                return (currEvent.key.keysym.sym==SDLK_LEFT | currEvent.key.keysym.sym==SDLK_RIGHT | currEvent.key.keysym.sym==SDLK_UP);
             `
             `
                 // reset player direction to ensure player stops when user stops pressing the key
-                playerDirection = 0;
+                if (currEvent.key.keysym.sym==SDLK_LEFT | currEvent.key.keysym.sym==SDLK_RIGHT) {
+                    playerDirection = 0;
+                }
+                
+                if (currEvent.key.keysym.sym==SDLK_UP) {
+                    shooting = false;
+                }
             `;
 
             else2: check_keySym2 -> junct2;
@@ -327,6 +333,7 @@ capsule Top {
             update: junct2 -> exitP1
             `
                 inputP.move(playerDirection).send();
+                if (shooting) inputP.shoot().send();
                 SDL_RenderPresent(renderer);
             `;
         };

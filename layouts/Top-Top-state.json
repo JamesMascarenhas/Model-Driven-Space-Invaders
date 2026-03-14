@@ -378,7 +378,7 @@
         "label_y": -5.0
       },
       {
-        "element": "ProcessInput::left_or_right",
+        "element": "ProcessInput::left_or_right_or_up",
         "label_x": 22.0,
         "label_y": 19.0
       },

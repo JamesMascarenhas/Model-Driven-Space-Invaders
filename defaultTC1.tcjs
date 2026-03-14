@@ -21,7 +21,8 @@ tc.threads = [
 }
 ];
 tc.userLibraries = [
+    '-L/opt/homebrew/lib',
     '-lSDL2',
-    '-lSDL2_TTF'
+    '-lSDL2_ttf'
 ];
 tc.targetFolder = 'SpaceInvadersV0_target';
