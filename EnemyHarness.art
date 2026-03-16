@@ -6,6 +6,8 @@ capsule EnemyHarness {
             int ROUND_DELAY { 10000000 } ;
             // direction that enemies are currently going in: 1=right, -1=left, 0=down
             int direction { 1 } ;
+            int nextHorizontalDirection { 1 } ;
+            bool downNext { false } ;
             bool stopMovement { false } ;
             int NUM_ENEMIES = 55;
         protected:
@@ -55,6 +57,8 @@ capsule EnemyHarness {
             start: entryP1 -> State
             `
                 direction = 1;              // start by moving right
+                nextHorizontalDirection = 1;
+                downNext = false;
                 stopMovement = false;
                 timerP.informIn(RTTimespec(0, ROUND_DELAY));
             `;
@@ -70,6 +74,15 @@ capsule EnemyHarness {
 
             roundDone: State -> State on moveEndP.move
             `
+                if (downNext) {
+                    direction = 0;  // next move should be down
+                    downNext = false;
+                }
+                
+                else if (direction == 0) {  // just moved down, so next move should be horizontal
+                    direction = nextHorizontalDirection;
+                }
+                
                 if (!stopMovement) {
                     timerP.informIn(RTTimespec(0, ROUND_DELAY));
                 }
@@ -80,10 +93,16 @@ capsule EnemyHarness {
                 int hitDirection = *rtdata;
 
                 if (hitDirection == 1) {
-                    direction = -1;
+                    downNext = true;
+                    nextHorizontalDirection = -1;
                 }
                 else if (hitDirection == -1) {
-                    direction = 1;
+                    downNext = true;
+                    nextHorizontalDirection = 1;
+                }
+                else if (hitDirection == 0) {
+                    stopMovement = true;
+                    endGameP.playerLoses().send();
                 }
             `;
         };

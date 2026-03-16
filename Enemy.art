@@ -71,9 +71,9 @@ capsule Enemy {
         
         void Enemy::updateLocation( void )  {
             if (direction==0)  // go down
-                y+=10;
+                y+=2;
             else               // go right (direction==1) or left (direction==-1)
-                x+=direction*10;
+                x+=direction*2;
         }
         
         bool Enemy::atLeftBorder( void )  {
@@ -218,10 +218,18 @@ capsule Enemy {
             shape = createVisibleShape(x,y,w,h,r,g,b);
             renderP.render(shape).send();
 
+            if ((rand() % 100) < SHOOT_PROBABILITY)  {	// shoot with some probability
+                Location bLoc = createInitialBulletLocation();
+                shootP.shoot(bLoc).send();
+            }
+
             if (direction == 1 && atRightBorder()) {
                 harnessP.changeDirection(direction).send();
             }
             else if (direction == -1 && atLeftBorder()) {
+                harnessP.changeDirection(direction).send();
+            }
+            else if (direction == 0 && atBottom()) {
                 harnessP.changeDirection(direction).send();
             }
 
