@@ -1,32 +1,35 @@
-2d - Task 2 was implemented mainly in Enemy.art and EnemyHarness.art.
-In Enemy.art, I added handling for movePrevP.move in the Alive state 
-so that each alive enemy updates its direction from the received movement 
-message, erases its old shape, calls updateLocation(), and renders itself 
-again at the new location. After moving, it checks whether it has reached 
-a border or the bottom using atRightBorder(), atLeftBorder(), and atBottom(), 
-and reports this to the harness using harnessP.changeDirection(). The movement 
-message is then forwarded to the next enemy through moveNextP.move(). 
-In the Dead state, enemies still forward move messages so that the circular movement 
-chain is preserved after enemies are destroyed.
 
-In EnemyHarness.art, I used the existing circular movement structure to coordinate all enemies. 
-Once all enemies are connected, the harness starts timed movement rounds. On each round it sends a 
-moveStartP.move(direction) message into the chain, and when the movement token returns through moveEndP.move, 
-the harness schedules the next round. This prevents overlapping movement rounds and keeps the enemy formation aligned.
+2d - In Enemy. art I added handing for movePrevp.move in the Alive state so that
+when an enemy receives a move message, it updates its direction, erases the old shape
+at the old location and re-renders itself at the new location. After re-rendering, 
+the enemy checks if it has hit the right left, or bottom border, and if any of these have 
+occured it tells this to the harnass. Also enemies forward messages to each other so that 
+they can stay in the same grid. In the dead state, enemies still forward menssages to keep
+the grid in tact even after their death.
+In the EnemyHarness.art this is where the changing of direciton actually happens and where
+the enemies are kept in their grid.
 
-For Task 2a, the harness starts with direction = 1, so enemies move right. When an enemy reports that it has reached the 
-right border, the harness stops future movement rounds.
+For Task 2a, the harnass starts with direction = 1 (moving right). When an enemy reports
+it reached the right border, the harness would stop future movement rounds.
 
-For Task 2b, instead of stopping, the harness reverses the global direction when a border is reached. If the reported 
-direction is 1, the next horizontal direction becomes -1, and if the reported direction is -1, it becomes 1. This makes 
-the enemies move right and left forever.
+For Task 2b, I changed the harness so that border reports no longer stop movement. Instead, 
+if the reported direction is 1, the harness changes the global direction to -1, and if the 
+reported direction is -1, it changes the global direction back to 1. This makes the formation 
+continuously alternate between moving right and moving left.
 
-For Task 2c, I extended the harness logic to support a downward movement round. When a horizontal border is reached, 
-the harness sets the next round to direction = 0, which causes all enemies to move down by one row. After that round completes, 
-the harness switches to the opposite horizontal direction. If an enemy reaches the bottom while moving down, the harness 
-sends endGameP.playerLoses().
+For Task 2c, I extended the harness logic to support a downward round between horizontal sweeps. 
+I kept direction as the currently issued movement direction and added nextHorizontalDirection to 
+remember which horizontal direction should follow the downward move. When a right border is reached, 
+the harness sets up the next round to move down and stores -1 as the next horizontal direction. When 
+a left border is reached, it sets up the next round to move down and stores 1 as the next horizontal 
+direction. After the downward round completes, the harness restores the saved horizontal direction. 
+This produces the required pattern of right, down, left, down, and so on. If an enemy reaches the bottom 
+while moving down, the harness sends endGameP.playerLoses().
 
-The movement update frequency remains round-based, and I reduced the per-update movement distance in Enemy::updateLocation() 
-so the behavior is easier to observe and test while preserving the same movement logic. It used to be 10 pixels per update
-and I reduced it to 2 to make the game playable and debugging easier while keeping the update frequency at the standard 0.01
-seconds. 
+Notes:
+On my macOS setup, the generated target Makefile did not automatically include the required C++14 and SDL2 
+include settings, so I used helper scripts (fix_makefile.sh and rebuild_run.sh) to patch the generated Makefile 
+and rebuild/run the project more consistently.
+
+The quit path left the Top process unresponsive after displaying game over output, so I had to force quit
+the process after testing. This did not affect the implementation of Tasks 1 to 3.
