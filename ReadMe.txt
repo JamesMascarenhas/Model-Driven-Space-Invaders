@@ -33,3 +33,7 @@ and rebuild/run the project more consistently.
 
 The quit path left the Top process unresponsive after displaying game over output, so I had to force quit
 the process after testing. This did not affect the implementation of Tasks 1 to 3.
+
+In the sequence diagram for Part 2, I created it in Lucidchart based on the output and inspection of the code.
+I ran into some trouble trying to generate it Model Realtime and since the instructions said we could use any
+tool I just decided to use Lucidchart which is just a website that I am familiar with.

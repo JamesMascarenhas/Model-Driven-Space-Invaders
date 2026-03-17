@@ -1,10 +1,10 @@
 [
   {
-    "directory": "/Users/jamesmascarenhas/Desktop/courses/2nd_sem/844/Assignments/Assignment3/SpaceInvadersV0",
+    "directory": "/Users/jamesmascarenhas/Desktop/courses/2nd_sem/844/Assignments/Assignment3/James_Mascarenhas_A3_CISC844_W26/SpaceInvadersV0",
     "arguments": [
       "/usr/bin/clang++",
-      "-I/Users/jamesmascarenhas/Desktop/courses/2nd_sem/844/Assignments/Assignment3/SpaceInvadersV0_target",
-      "-I/Users/jamesmascarenhas/Desktop/courses/2nd_sem/844/Assignments/Assignment3/SpaceInvadersV0",
+      "-I/Users/jamesmascarenhas/Desktop/courses/2nd_sem/844/Assignments/Assignment3/James_Mascarenhas_A3_CISC844_W26/SpaceInvadersV0_target",
+      "-I/Users/jamesmascarenhas/Desktop/courses/2nd_sem/844/Assignments/Assignment3/James_Mascarenhas_A3_CISC844_W26/SpaceInvadersV0",
       "-I/Users/jamesmascarenhas/.vscode/extensions/secure-dev-ops.code-realtime-ce-3.2.3/TargetRTS/include",
       "-I/Users/jamesmascarenhas/.vscode/extensions/secure-dev-ops.code-realtime-ce-3.2.3/TargetRTS/target/MacT",
       "-c",
@@ -15,11 +15,11 @@
     "file": "Location"
   },
   {
-    "directory": "/Users/jamesmascarenhas/Desktop/courses/2nd_sem/844/Assignments/Assignment3/SpaceInvadersV0",
+    "directory": "/Users/jamesmascarenhas/Desktop/courses/2nd_sem/844/Assignments/Assignment3/James_Mascarenhas_A3_CISC844_W26/SpaceInvadersV0",
     "arguments": [
       "/usr/bin/clang++",
-      "-I/Users/jamesmascarenhas/Desktop/courses/2nd_sem/844/Assignments/Assignment3/SpaceInvadersV0_target",
-      "-I/Users/jamesmascarenhas/Desktop/courses/2nd_sem/844/Assignments/Assignment3/SpaceInvadersV0",
+      "-I/Users/jamesmascarenhas/Desktop/courses/2nd_sem/844/Assignments/Assignment3/James_Mascarenhas_A3_CISC844_W26/SpaceInvadersV0_target",
+      "-I/Users/jamesmascarenhas/Desktop/courses/2nd_sem/844/Assignments/Assignment3/James_Mascarenhas_A3_CISC844_W26/SpaceInvadersV0",
       "-I/Users/jamesmascarenhas/.vscode/extensions/secure-dev-ops.code-realtime-ce-3.2.3/TargetRTS/include",
       "-I/Users/jamesmascarenhas/.vscode/extensions/secure-dev-ops.code-realtime-ce-3.2.3/TargetRTS/target/MacT",
       "-c",

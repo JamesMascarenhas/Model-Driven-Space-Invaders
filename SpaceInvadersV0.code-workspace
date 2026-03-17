@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "SpaceInvadersV0_target",
+			"path": "../SpaceInvadersV0_target"
+		}
+	],
+	"settings": {
+		"files.readonlyInclude": {
+			"/Users/jamesmascarenhas/.vscode/extensions/secure-dev-ops.code-realtime-ce-3.2.3/**/*": true
+		}
+	}
+}
